@@ -13,14 +13,6 @@ import logo from '../../assets/astronaut.svg';
 import { FaEllipsisV, FaCalendarDay } from "react-icons/fa";
 import { BiStats } from "react-icons/bi";
 
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-
-
-
 const useStyles = makeStyles((( theme ) => ({
    btn: {
      color: '#ffffff',
@@ -51,14 +43,15 @@ const StyledMenuItem = withStyles(( theme ) => ({
 
 function Cards() {
   const [projects, setProjects] = useState([]);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [menu, setMenu] = useState(null);
   const [open, setOpen] = useState(false);
   const classes = useStyles();
+  const [id, setId] = useState();
   
 
   useEffect(() => {
     getProjects();
-  }, []);
+  }, [projects]);
 
   const getProjects = () => {
     axios
@@ -80,63 +73,46 @@ function Cards() {
      return 'Alto'
   }
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    console.log(event);
+  const menuTarget = (event) => {
+    setMenu(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const closeMenu = () => {
+    setMenu(null);
+  };
+
+  const stateDialogRegister = () => {
+    setId('');
+    setOpen(true);
+  };
+
+  const stateDialogEdit = ( state ) => {
+    setOpen(state);
   };
 
   
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const closeDialog = ( state ) => {
-    setOpen(state);
-  };
-
-  console.log("projects", projects);
-  console.log("projects", projects.length);
-
   return (
     <>
     <div className="container">
-      <StyledMenu
-          id="simple-menu"
-          anchorEl={ anchorEl }
-          keepMounted
-          open={ Boolean(anchorEl) }
-          onClose={ handleClose }
-          className={ classes.menu }
-        >
-
-          <StyledMenuItem onClick={ handleClose }>Editar</StyledMenuItem>
-          <StyledMenuItem onClick={ handleClose }>Excluir</StyledMenuItem>
-          <StyledMenuItem onClick={ handleClose }>Simular investimento</StyledMenuItem>
-        </StyledMenu>
-
-        <ProjectDialog showDialog={ open } closeDialog={ ( value ) => { closeDialog() }  }></ProjectDialog>
+        <ProjectDialog showDialog={ open } idProject={ id } stateDialogEdit={ ( value ) => { stateDialogEdit() }  }></ProjectDialog>
 
         <section className="menu">
           <div>
-            <img src={logo} alt="Lorem Invest"></img>
+            <img src={ logo } alt="Lorem Invest"></img>
           </div>
 
           <h1>Lorem Invest</h1>
         </section>
 
         <section className="actions">
-          <Button className={ classes.btn } onClick={ () => handleClickOpen() } variant="contained">Cadastrar</Button>
+          <Button className={ classes.btn } onClick={ () => stateDialogRegister() } variant="contained">Cadastrar</Button>
         </section>
 
 
       <section className="card-container">
           { projects.map((project) => 
-              ( 
+            ( 
               <div className="cards">
                   <h1> { project.name } </h1>
 
@@ -152,22 +128,32 @@ function Cards() {
                     </li>
                 </ul>
                     
-                <div className="participants-container">
+                  <div className="participants-container">
                     <div className="participants">
-                          {project.participants.map((participant) => 
-                              <div className="participants-names"> { participant.nome[0] }</div>
-                          )}
-                      </div>
+                        {project.participants.map((participant) => 
+                          <div className="participants-names"> { participant[0].toLocaleUpperCase() }</div>
+                        )}
+                    </div>
 
-                      <div className="icon-more" onClick={ handleClick }><FaEllipsisV></FaEllipsisV></div>
-                  </div>
-
+                    <div className="icon-more" onClick={ menuTarget }><FaEllipsisV></FaEllipsisV></div>
                   
-                
+                  </div>
+                  <StyledMenu
+                    id="simple-menu"
+                    anchorEl={ () => menu }
+                    keepMounted
+                    open={ Boolean(menu) }
+                    onClose={ closeMenu }
+                    className={ classes.menu }
+                    >
 
+                    <StyledMenuItem onClick={ () => {stateDialogEdit(true); setId(project._id); setMenu(false)} }>Editar</StyledMenuItem>
+                    <StyledMenuItem onClick={ closeMenu }>Excluir</StyledMenuItem>
+                    <StyledMenuItem onClick={ closeMenu }>Simular investimento</StyledMenuItem>
+                  </StyledMenu>
               </div>
-              )
-          )}
+
+            ))}
       </section>
     </div>
      

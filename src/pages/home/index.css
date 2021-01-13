@@ -89,3 +89,7 @@
 .icon-more {
   align-self: flex-end;
 }
+
+.icon-more:hover {
+  cursor: pointer;
+}
