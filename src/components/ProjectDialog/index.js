@@ -74,9 +74,16 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
 
   useEffect(() => {
     console.log('--------------')
+    console.log('idProject', idProject);
     if (idProject === "") {
       setTitle("Cadastrar novo projeto");
       setBtnName('Cadastrar');
+      setProjectName('');
+      setInitialDate(new Date());
+      setEndDate(new Date());
+      setProjectValue(0);
+      setRisk(0);
+      setParticipants([]);
     } else {
       setTitle("Editar projeto");
       setBtnName('Editar');
@@ -97,7 +104,7 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
       loadData();
      
     }
-  }, [idProject, title]);
+  }, [idProject]);
 
   const registerProject = async () => {
     const body = {
@@ -137,16 +144,17 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
   }
 
   const handleClose = () => {
-      stateDialogEdit(false);
-      showDialog = false;
-      console.log('true');
+    stateDialogEdit(false);
+    showDialog = false;
+    console.log('true');
+    if (idProject === '') {  
       setProjectName('');
       setInitialDate(new Date());
       setEndDate(new Date());
       setProjectValue(0);
       setRisk(0);
       setParticipants([]);
-    
+    }
   };
 
   return (

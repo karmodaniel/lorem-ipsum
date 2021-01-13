@@ -42,16 +42,16 @@ const StyledMenuItem = withStyles(( theme ) => ({
 
 
 function Cards() {
+  const classes = useStyles();
+
   const [projects, setProjects] = useState([]);
+  const [id, setId] = useState('');
   const [menu, setMenu] = useState(null);
   const [open, setOpen] = useState(false);
-  const classes = useStyles();
-  const [id, setId] = useState();
   
-
   useEffect(() => {
     getProjects();
-  }, [projects]);
+  }, []);
 
   const getProjects = () => {
     axios
@@ -73,7 +73,10 @@ function Cards() {
      return 'Alto'
   }
 
-  const menuTarget = (event) => {
+  const menuTarget = (event, idCard) => {
+    console.log(idCard)
+    console.log(event.currentTarget);
+    setId(idCard);
     setMenu(event.currentTarget);
   };
 
@@ -113,7 +116,7 @@ function Cards() {
       <section className="card-container">
           { projects.map((project) => 
             ( 
-              <div className="cards">
+              <div className="cards" key={project.name}>
                   <h1> { project.name } </h1>
 
                 <ul className="schedule">
@@ -131,13 +134,13 @@ function Cards() {
                   <div className="participants-container">
                     <div className="participants">
                         {project.participants.map((participant) => 
-                          <div className="participants-names"> { participant[0].toLocaleUpperCase() }</div>
+                          <div className="participants-names" key={participant}> { participant[0].toLocaleUpperCase() }</div>
                         )}
                     </div>
 
-                    <div className="icon-more" onClick={ menuTarget }><FaEllipsisV></FaEllipsisV></div>
-                  
+                    <div className="icon-more" onClick={ (e) => {menuTarget(e, project._id); } }><FaEllipsisV></FaEllipsisV></div>
                   </div>
+
                   <StyledMenu
                     id="simple-menu"
                     anchorEl={ () => menu }
@@ -146,8 +149,8 @@ function Cards() {
                     onClose={ closeMenu }
                     className={ classes.menu }
                     >
-
-                    <StyledMenuItem onClick={ () => {stateDialogEdit(true); setId(project._id); setMenu(false)} }>Editar</StyledMenuItem>
+                    
+                    <StyledMenuItem onClick={ () => {stateDialogEdit(true); setMenu(false)} }>Editar</StyledMenuItem>
                     <StyledMenuItem onClick={ closeMenu }>Excluir</StyledMenuItem>
                     <StyledMenuItem onClick={ closeMenu }>Simular investimento</StyledMenuItem>
                   </StyledMenu>
