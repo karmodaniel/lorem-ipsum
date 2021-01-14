@@ -11,6 +11,8 @@ import axios from "axios";
 import "./index.css";
 import RemoveDialog from '../../components/RemoveDialog';
 import ProjectDialog from "../../components/ProjectDialog";
+import SimulateDialog from '../../components/SimulateDialog';
+
 import logo from "../../assets/astronaut.svg";
 
 import { FaEllipsisV, FaCalendarDay } from "react-icons/fa";
@@ -47,10 +49,12 @@ function Cards() {
   const classes = useStyles();
 
   const [projects, setProjects] = useState([]);
+  const [project, setProject] = useState([]);
   const [id, setId] = useState("");
   const [menu, setMenu] = useState(null);
   const [open, setOpen] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
+  const [openSimulateDialog, setOpenSimulateDialog] = useState(false);
   
 
   useEffect(() => {
@@ -75,10 +79,12 @@ function Cards() {
     return "Alto";
   };
 
-  const menuTarget = (event, idCard) => {
-    console.log(idCard);
+  const menuTarget = (event, project) => {
+    console.log(project);
+    console.log(project._id);
     console.log(event.currentTarget);
-    setId(idCard);
+    setId(project._id);
+    setProject(project);
     setMenu(event.currentTarget);
   };
 
@@ -99,6 +105,10 @@ function Cards() {
     setOpenRemoveDialog(state);
   };
 
+  const OpenDialogSimulate = (state) => {
+    setOpenSimulateDialog(state);
+  }
+
   return (
     <>
       <div className="container">
@@ -111,6 +121,13 @@ function Cards() {
         ></ProjectDialog>
 
         <RemoveDialog openRemove={ openRemoveDialog } setOpenRemoveDialog={setOpenRemoveDialog} projectId={ id }></RemoveDialog>
+
+        <SimulateDialog 
+        openSimulateDialog={ openSimulateDialog } 
+        setOpenSimulateDialog={setOpenSimulateDialog}
+        project={ project }
+        >
+        </SimulateDialog>
 
         <section className="menu">
           <div>
@@ -161,12 +178,7 @@ function Cards() {
                   ))}
                 </div>
 
-                <div
-                  className="icon-more"
-                  onClick={(e) => {
-                    menuTarget(e, project._id);
-                  }}
-                >
+                <div className="icon-more" onClick={(e) => { menuTarget(e, project);}}>
                   <FaEllipsisV></FaEllipsisV>
                 </div>
               </div>
@@ -179,16 +191,15 @@ function Cards() {
                 onClose={closeMenu}
                 className={classes.menu}
               >
-                <StyledMenuItem
-                  onClick={() => {
-                    stateDialogEdit(true);
-                    setMenu(false);
-                  }}
-                >
+                <StyledMenuItem onClick={() => {stateDialogEdit(true);setMenu(false);}}>
                   Editar
                 </StyledMenuItem>
-                <StyledMenuItem onClick={() => {closeMenu(); openDialogRemoveProject(true)}}>Excluir</StyledMenuItem>
-                <StyledMenuItem onClick={closeMenu}>
+                
+                <StyledMenuItem onClick={() => {closeMenu(); openDialogRemoveProject(true)}}>
+                  Excluir
+                </StyledMenuItem>
+                
+                <StyledMenuItem onClick={() => {closeMenu(); OpenDialogSimulate(true)}}>
                   Simular investimento
                 </StyledMenuItem>
               </StyledMenu>
