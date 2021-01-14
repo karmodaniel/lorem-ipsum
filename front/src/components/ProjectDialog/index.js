@@ -3,7 +3,8 @@ import "./index.css";
 import ChipInput from "material-ui-chip-input";
 import axios from "axios";
 import moment from 'moment';
-
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { error, success } from '../../utils/toast'
 import {
   Button,
   TextField,
@@ -13,8 +14,8 @@ import {
   DialogTitle,
   MenuItem,
 } from "@material-ui/core";
-
-import { makeStyles } from "@material-ui/core/styles";
+  
+  import { makeStyles } from "@material-ui/core/styles";
 
 import DateFnsUtils from "@date-io/date-fns";
 
@@ -70,11 +71,10 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
   const [projectValue, setProjectValue] = useState(0);
   const [risk, setRisk] = useState("0");
   const [participants, setParticipants] = useState([]);
+  const [erro, setError] = useState({});
 
 
   useEffect(() => {
-    console.log('--------------')
-    console.log('idProject', idProject);
     if (idProject === "") {
       setTitle("Cadastrar novo projeto");
       setBtnName('Cadastrar');
@@ -98,7 +98,6 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
         setEndDate(formatDateTimeStamp(response.data.endDate));
         setProjectValue(response.data.projectValue);
         setParticipants(response.data.participants);
-        console.log(response.data);
       };
 
       loadData();
@@ -115,9 +114,19 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
       "risk": risk,
       "participants": participants
     }
-    const result = await axios.post('http://localhost:3001/lorem-invest/projects', body);
-    console.log(result);
-    handleClose();
+    const errors = validateForm();
+    if (errors) {
+      error("Preencha todos os campos obrigatórios!");
+      return false;
+    }
+    try {
+      await axios.post('http://localhost:3001/lorem-invest/projects', body);
+      success("Projeto criado com sucesso!")
+      handleClose();
+      
+    } catch (e) {
+      error("Ops deu error");
+    }
   }
 
   const editProject = async () => {
@@ -129,9 +138,19 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
       "risk": risk,
       "participants": participants
     }
-    const response = await axios.put( `http://localhost:3001/lorem-invest/projects/${idProject}`, body)
-    console.log(response);
-    handleClose();
+    const errors = validateForm();
+    if (errors) {
+      error("Preencha todos os campos obrigatórios!");
+      return false;
+    }
+    try {
+      await axios.put( `http://localhost:3001/lorem-invest/projects/${idProject}`, body)
+      success("Projeto atualizado com sucesso!")
+      handleClose();
+      
+    } catch (e) {
+      error("Ops deu error!")
+    }
   }
 
   const formatDateTimeStamp = (date) => {
@@ -146,7 +165,6 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
   const handleClose = () => {
     stateDialogEdit(false);
     showDialog = false;
-    console.log('true');
     if (idProject === '') {  
       setProjectName('');
       setInitialDate(new Date());
@@ -155,6 +173,21 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
       setRisk(0);
       setParticipants([]);
     }
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (projectName.length === 0) {
+      errors["projectName"] = true;
+    }
+    if (projectValue === 0) {
+      errors["projectValue"] = true;
+    }
+    if (participants.length === 0) {
+      errors["participants"] = true;
+    }
+    setError(errors);
+    return Object.keys(errors).length;
   };
 
   return (
@@ -171,6 +204,7 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
             value={projectName}
             onChange={(event) => setProjectName(event.target.value)}
             variant="outlined"
+            error={erro["projectName"]}
             fullWidth
           />
 
@@ -211,9 +245,13 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
             label="Valor"
             type="number"
             defaultValue={projectValue}
+            InputProps={{
+              startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+            }}
             variant="outlined"
             onChange= {(event) => setProjectValue(event.target.value) }
             fullWidth
+            error={erro["projectValue"]}
             className={ classes.inputValue }
           />
           <TextField
@@ -223,10 +261,11 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
             value={risk}
             onChange={ (event) => setRisk( event.target.value )}
             variant="outlined"
+            error={erro["risk"]}
             className={classes.select}
           >
             {risks.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
+              <MenuItem key={option._id} value={option.value}>
                 {option.label}
               </MenuItem>
             ))}
@@ -236,6 +275,7 @@ function ProjectDialog({ showDialog, stateDialogEdit, idProject }) {
             defaultValue={participants}
             onChange={(chips) => setParticipants(chips)}
             fullWidth={true}
+            error={erro["participants"]}
             label="Participantes"
           />
         </DialogContent>

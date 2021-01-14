@@ -80,9 +80,6 @@ function Cards() {
   };
 
   const menuTarget = (event, project) => {
-    console.log(project);
-    console.log(project._id);
-    console.log(event.currentTarget);
     setId(project._id);
     setProject(project);
     setMenu(event.currentTarget);
@@ -148,8 +145,9 @@ function Cards() {
         </section>
 
         <section className="card-container">
+          {projects.length === 0 ? ("Nenhum projeto cadastrado"): null}
           {projects.map((project) => (
-            <div className="cards" key={project.name}>
+            <div className="cards" key={project._id}>
               <h1> {project.name} </h1>
 
               <ul className="schedule">
@@ -171,7 +169,7 @@ function Cards() {
               <div className="participants-container">
                 <div className="participants">
                   {project.participants.map((participant) => (
-                    <div className="participants-names" key={participant}>
+                    <div className="participants-names" key={participant._id}>
                       {" "}
                       {participant[0].toLocaleUpperCase()}
                     </div>

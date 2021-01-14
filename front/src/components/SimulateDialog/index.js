@@ -8,7 +8,8 @@ import {
     TextField,
     MenuItem
   } from "@material-ui/core";
-
+  import InputAdornment from '@material-ui/core/InputAdornment';
+import {error} from '../../utils/toast'
 
 function SimulateDialog({openSimulateDialog, setOpenSimulateDialog, project}) {
     const { name, projectValue, risk } = project;
@@ -32,7 +33,7 @@ function SimulateDialog({openSimulateDialog, setOpenSimulateDialog, project}) {
                 return ( investValue * 10 ) / 100;
             }
         } else {
-            setReturnValue('Valor não pode ser menor que o valor do projeto!')
+          error("Valor não pode ser menor que o valor do projeto!")
             return 'Valor não pode ser menor que o valor do projeto!'
         }
     }
@@ -44,7 +45,6 @@ function SimulateDialog({openSimulateDialog, setOpenSimulateDialog, project}) {
         return "Alto";
       };
     
-    console.log('project', project);
     return (
         <>
          <Dialog open={openSimulateDialog} onClose={closeDialogSimulate}>
@@ -57,6 +57,9 @@ function SimulateDialog({openSimulateDialog, setOpenSimulateDialog, project}) {
             label="Valor do investimento"
             type="number"
             variant="outlined"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+            }}
             onChange= {(event) => {setInvestValue(event.target.value); setReturnValue('') }}
             fullWidth
             //className={ classes.inputValue }
@@ -89,8 +92,13 @@ function SimulateDialog({openSimulateDialog, setOpenSimulateDialog, project}) {
 
           <TextField
             id="name"
-            label= { returnValue ? returnValue : 'Valor do retorno' }
+            label= 'Valor do retorno'
             type="number"
+            value={ returnValue ? returnValue : ""}
+            
+            InputProps={{
+              startAdornment: returnValue ? <InputAdornment position="start">R$</InputAdornment>: null,
+            }}
             //defaultValue={projectValue}
             variant="outlined"
             //onChange= {(event) => setProjectValue(event.target.value) }

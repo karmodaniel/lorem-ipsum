@@ -1,25 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from 'axios';
 import {
   Button,
   Dialog,
   DialogActions,
-  //DialogContent,
   DialogTitle,
 } from "@material-ui/core";
+import { success, error } from '../../utils/toast'
 
 function RemoveDialog( {openRemove, setOpenRemoveDialog, projectId} ) {
 
   const closeDialogRemoveProject = () => {
     setOpenRemoveDialog(false);
   };
-  console.log('teste', projectId)
 
   const removeProject = async (projectId) => {
-      console.log('dentro', projectId);
-      const response = await axios.delete(`http://localhost:3001/lorem-invest/projects/${projectId}`);
-      console.log(response);
-      closeDialogRemoveProject();
+      try {
+        await axios.delete(`http://localhost:3001/lorem-invest/projects/${projectId}`);
+        success("Projeto excluido com sucesso")
+        closeDialogRemoveProject();
+      } catch (e) {
+        error("Erro ao deletar")
+      }
     }
 
   return (
