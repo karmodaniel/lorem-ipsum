@@ -3,7 +3,7 @@
 
 ## Try it yourself
 
-First, you need to have [Node.js](https://nodejs.org.com) and [React](https://pt-br.reactjs.org/) installed.
+First, you need to have [Node.js](https://nodejs.org.com), [React](https://pt-br.reactjs.org/) and MongoDB installed.
 
 Run `npm i` or `yarn start` to install the project dependencies.
 
@@ -17,6 +17,7 @@ Navigate to `http://localhost:3000/`. The app will automatically reload if you c
 
 - React
 - Node.js
+- Materia UI
 - MongoDB
 
 ## 🚀 Design tools
