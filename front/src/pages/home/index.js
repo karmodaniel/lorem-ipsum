@@ -59,7 +59,7 @@ function Cards() {
 
   useEffect(() => {
     getProjects();
-  }, []);
+  });
 
   const getProjects = () => {
     axios
